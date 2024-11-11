@@ -91,32 +91,34 @@ document.addEventListener("DOMContentLoaded", function () {
             case 'radio':
                 const selectedOption = document.querySelector('input[name="answer"]:checked');
                 if (selectedOption) {
-                    userAnswer = selectedOption.value;
+                    userAnswer = selectedOption.value.toLowerCase(); // Change: Ensures case-insensitive comparison
                 }
                 break;
             case 'text':
-                userAnswer = document.getElementById('text-answer').value.trim().toLowerCase();
+                userAnswer = document.getElementById('text-answer').value.trim().toLowerCase(); // Change: Ensures consistent case handling
                 break;
             case 'image':
                 const selectedImage = document.querySelector('.image-option.selected');
                 if (selectedImage) {
-                    userAnswer = selectedImage.dataset.answer;
+                    userAnswer = selectedImage.dataset.answer.toLowerCase(); // Change: Case-insensitive for image answers
                 }
                 break;
         }
 
+        // Ensure an answer was selected
         if (!userAnswer) {
-            alert("Please select an answer.");
-            currentQuestionIndex--;
+            alert("Please select or enter an answer.");
+            currentQuestionIndex--; // Change: Prevent advancing if no answer is selected
             return;
         }
 
+        // Answer checking logic
         if (Array.isArray(currentQuestion.answer)) {
-            if (currentQuestion.answer.includes(userAnswer)) {
+            if (currentQuestion.answer.some(answer => answer.toLowerCase() === userAnswer)) { // Change: Enhanced array answer check
                 score++;
             }
         } else {
-            if (currentQuestion.answer.toLowerCase() === userAnswer.toLowerCase()) {
+            if (currentQuestion.answer.toLowerCase() === userAnswer) { // Change: Ensures case-insensitivity for non-array answers
                 score++;
             }
         }
@@ -130,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function getRandomQuestions(questions, num) {
-        const shuffled = questions.sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, num);
+        const shuffled = questions.slice().sort(() => 0.5 - Math.random()); // Change: Avoids modifying original array
+        return shuffled.slice(0, Math.min(num, questions.length)); // Change: Ensures no out-of-bounds slicing
     }
 });
